@@ -11,9 +11,9 @@ Then, launch an :
 `npm start` 
 and start to code in the `src` folder.
 
-The webpack-config included has an `onBuild' event that re-execute the compiled code with `node ./dist/index.js` (or you can replace it by launching a test library).
+The webpack config (which is included) has an `onBuild` event that re-execute the compiled code with `node ./dist/index.js` (or you can replace it by launching a test library or whatever).
 
-It includes ESLint with a basic conf.
+It also includes [ESLint](http://eslint.org "EsLint homepage") with a basic ES6 configuration.
 
 **Requirements :**
 - nodejs (v4.2.2 or >)
