@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "es2015",
+    "stage-0"
+  ],
+  "env": {
+  },
+  "plugins": [
+    "transform-runtime",
+    ["babel-project-relative-import", {
+      "projectPathSuffix": "src/"
+    }]
+  ]
+}
