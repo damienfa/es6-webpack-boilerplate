@@ -12,18 +12,33 @@ const DEBUG = !_.includes(args.original, '--production');
 const VERBOSE = _.includes(args.original, '--verbose');
 
 const PATHS = {
+   root: __dirname,
+   config: path.join(__dirname, 'config'),
    src: path.join(__dirname, 'src'),
    dist: path.join(__dirname, 'dist')
 };
 
-const plugins = [];
+const plugins = [
+   new webpack.optimize.DedupePlugin()
+];
+
+var fs = require('fs');
+
+var nodeModules = {};
+fs.readdirSync('node_modules')
+.filter(function(x) {
+      return ['.bin'].indexOf(x) === -1;
+   })
+   .forEach(function(mod) {
+      nodeModules[mod] = 'commonjs ' + mod;
+   });
+
 
 if (!DEBUG) {
 
-   plugins.push(new webpack.optimize.DedupePlugin());
-
    plugins.push(
       new webpack.optimize.UglifyJsPlugin({
+
          compress: {
             screw_ie8: true,
             sequences: true,
@@ -36,6 +51,7 @@ if (!DEBUG) {
             drop_console: true,
             warnings: VERBOSE
          },
+         sourceMap: true,
          mangle: false, // maybe ?
          output: {
             comments: false
@@ -46,25 +62,30 @@ if (!DEBUG) {
 }
 
 const common = {
-   //context: PATHS.src,
+   context: PATHS.root,
    entry: {
-      'app': './src/index.js'
+      'main': './index.js',
    },
-   //target: 'node',
+   target: 'node',
    resolve: {
       extensions: ['', '.js'],
    },
    output: {
       path: PATHS.dist,
       filename: 'index.js',
-      //publicPath: '/',
+      publicPath: '/',
    },
+   target: 'node',
+   node: {
+      __filename: false,
+      __dirname: false,
+   },
+   externals: nodeModules,
    module: {
-
       loaders: [{
          test: /\.jsx?$/,
          loaders: ['babel'],
-         include: PATHS.src,
+         include: [PATHS.root, PATHS.src, PATHS.config],
          exclude: /node_modules/
       }, {
          test: /\.json$/,
@@ -79,13 +100,13 @@ const common = {
 
 
 if (TARGET === 'start' || !TARGET) {
-   
+
    plugins.push(new WebpackShellPlugin({
       onBuildExit: [
          'echo \n \n \033[0;36m--- EXECUTION ---\033[0m \n \n',
          'node ./dist/index.js'
       ]
-   })); 
+   }));
 
    module.exports = merge(common, {
       devtool: 'eval-source-map',
@@ -94,4 +115,3 @@ if (TARGET === 'start' || !TARGET) {
 } else if (TARGET === 'build') {
    module.exports = merge(common, {});
 }
-
