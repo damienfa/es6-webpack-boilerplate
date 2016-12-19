@@ -4,10 +4,13 @@ import 'winston-daily-rotate-file';
 import config from '../config';
 
 /*
-const colorize = function(text) { 
-   winston.config.colorize(level, text); 
-};
+   --- LOGGER ---
+   This logger logs with the syslog levels standards (RFC5424) :
+   >  logger.log('error', 'Hello World of error')
+   >  logger.log('warning', 'Hello World of warning')
+   >  logger.log('info', 'Hello World of infos')
 */
+
 
 function getFormattedDate() {
    const now = new Date();
